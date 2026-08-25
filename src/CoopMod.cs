@@ -11,10 +11,8 @@ using UnityEngine.SceneManagement;
 
 namespace CrimeSceneCoop;
 
-/// <summary>
-/// MelonLoader entry. Drop CrimeSceneCoop.dll into the game's Mods folder.
-/// Press F10 in-game for Host / Join. Stains replicate as they are mopped.
-/// </summary>
+// MelonLoader entry drop CrimeSceneCoop.dll into the games Mods folder
+// F10 in game for host/join stains replicate as they are mopped
 public sealed class CoopMod : MelonMod
 {
     public static CoopMod Instance { get; private set; } = null!;
