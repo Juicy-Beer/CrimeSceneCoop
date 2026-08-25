@@ -12,10 +12,12 @@ internal static class HarmonyHooks
     public static void Install(HarmonyInstance harmony)
     {
         var hooked = 0;
+
         foreach (var m in GameProbe.CleanMethods.Concat(GameProbe.StrokeMethods).Distinct())
         {
             if (m == null) continue;
-            // ignore getters like 'GetCleaned' to prevent fps trampoline crashes
+
+            // Skip getters and non-void methods (they crash easily)
             if (m.Name.StartsWith("Get", StringComparison.OrdinalIgnoreCase) || m.ReturnType != typeof(void))
                 continue;
 
@@ -32,7 +34,6 @@ internal static class HarmonyHooks
 
         foreach (var t in GameProbe.StainTypes)
         {
-            // filter out non MonoBehaviour types to prevent AccessTools warning spam
             if (t == null || !typeof(Component).IsAssignableFrom(t)) continue;
             TryPatch(harmony, t, "OnDestroy", nameof(GonePostfix));
             TryPatch(harmony, t, "OnDisable", nameof(GonePostfix));
@@ -46,7 +47,6 @@ internal static class HarmonyHooks
     {
         try
         {
-            // only search methods declared directly on the target class to prevent console noise
             var m = t.GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             if (m == null) return;
             harmony.Patch(m, postfix: new HarmonyMethod(typeof(HarmonyHooks), postfix));
@@ -68,16 +68,18 @@ internal static class HarmonyHooks
 
             Vector3 pos = default, nrm = Vector3.up;
             float radius = 0.25f, strength = 1f;
+
             if (TryVec3(__instance, out pos) || TryVec3Arg(__args, out pos))
             {
                 TryVec3Arg(__args, 1, out nrm);
                 CoopSession.SendStainStroke(id, pos, nrm, radius, strength, 0);
             }
+
             StainRegistry.MarkLocal(id, amount);
         }
         catch
         {
-            // suppress exception loops to protect fps
+            // Prevent exception spam
         }
     }
 
@@ -99,7 +101,8 @@ internal static class HarmonyHooks
     {
         if (inst == null) return 0f;
 
-        foreach (var n in new[] { "amount", "Amount", "clean", "Clean", "dirt", "Dirt", "progress", "Progress", "health", "Health" })
+        // CleanableDecal uses Intensity
+        foreach (var n in new[] { "Intensity", "intensity", "amount", "Amount", "clean", "Clean", "dirt", "Dirt", "progress", "Progress", "health", "Health", "coveragePercentage" })
         {
             try
             {
