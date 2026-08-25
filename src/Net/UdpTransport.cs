@@ -3,10 +3,8 @@ using System.Net.Sockets;
 
 namespace CrimeSceneCoop;
 
-/// <summary>
-/// Direct UDP for LAN / port-forward. Same message blobs as Steam P2P.
-/// A tiny ack layer makes stain events reliable without extra libraries.
-/// </summary>
+/// direct UDP for LAN / port-forward same message blobs as Steam P2P
+/// a tiny ack layer makes stain events reliable without extra libraries
 internal sealed class UdpTransport : ITransport
 {
     private readonly UdpClient _udp;
