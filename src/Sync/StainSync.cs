@@ -3,14 +3,10 @@ using UnityEngine;
 
 namespace CrimeSceneCoop;
 
-// local mop is instant (the game already cleaned it) the packet goes out
-// instantly the friend applies the same clean on their client
-// 2 hz snapshot heals any missed event so both floors stay same
 internal static class StainSync
 {
     public static void Tick(float dt)
     {
-        // snapshot send lives in CoopSession nothing per frame here
     }
 
     public static void ApplyRemoteClean(uint id, float amount)
@@ -40,6 +36,7 @@ internal static class StainSync
         var radius = r.ReadSingle();
         var strength = r.ReadSingle();
         r.ReadByte();
+
         CoopSession.SuppressHooks = true;
         try
         {
@@ -57,36 +54,38 @@ internal static class StainSync
         var scene = NetProtocol.ReadString(r);
         var n = r.ReadUInt16();
         var seen = new HashSet<uint>();
+
         for (var i = 0; i < n; i++)
         {
             var id = r.ReadUInt32();
             var amount = r.ReadByte() / 255f;
             seen.Add(id);
-            if (amount <= 0.02f) ApplyRemoteClean(id, 0f);
+            if (amount <= 0.02f)
+                ApplyRemoteClean(id, 0f);
         }
-        // anything it still has that the host no longer lists is gone
+
+        // Remove stains that the host no longer has
         foreach (var (id, amount) in StainRegistry.Snapshot())
         {
             if (!seen.Contains(id) && amount > 0)
                 ApplyRemoteClean(id, 0f);
         }
+
         _ = scene;
     }
 
     private static void ApplyCleanTo(Component c, float amount)
     {
         var t = c.GetType();
+
+        // Prefer SetStrength (used by CleanableDecal)
         foreach (var m in GameProbe.CleanMethods)
         {
-            if (m.DeclaringType != null && m.DeclaringType.IsAssignableFrom(t))
+            if (m.Name == "SetStrength" && m.DeclaringType != null && m.DeclaringType.IsAssignableFrom(t))
             {
                 try
                 {
-                    var ps = m.GetParameters();
-                    if (ps.Length == 0) m.Invoke(c, null);
-                    else if (ps.Length == 1 && ps[0].ParameterType == typeof(float))
-                        m.Invoke(c, new object[] { amount });
-                    else continue;
+                    m.Invoke(c, new object[] { amount });
                     if (amount <= 0.02f) Hide(c);
                     return;
                 }
@@ -94,12 +93,45 @@ internal static class StainSync
             }
         }
 
-        foreach (var n in new[] { "amount", "Amount", "dirt", "Dirt", "cleanProgress", "health" })
+        // Try other known clean methods
+        foreach (var m in GameProbe.CleanMethods)
         {
-            var f = t.GetField(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (f != null && f.FieldType == typeof(float)) f.SetValue(c, amount);
-            var p = t.GetProperty(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (p != null && p.CanWrite && p.PropertyType == typeof(float)) p.SetValue(c, amount);
+            if (m.DeclaringType != null && m.DeclaringType.IsAssignableFrom(t))
+            {
+                try
+                {
+                    var ps = m.GetParameters();
+                    if (ps.Length == 0)
+                    {
+                        m.Invoke(c, null);
+                    }
+                    else if (ps.Length == 1 && ps[0].ParameterType == typeof(float))
+                    {
+                        m.Invoke(c, new object[] { amount });
+                    }
+                    else continue;
+
+                    if (amount <= 0.02f) Hide(c);
+                    return;
+                }
+                catch { }
+            }
+        }
+
+        // Fallback: write common fields/properties
+        foreach (var n in new[] { "Intensity", "intensity", "amount", "Amount", "dirt", "Dirt", "cleanProgress", "health", "coveragePercentage" })
+        {
+            try
+            {
+                var f = t.GetField(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (f != null && f.FieldType == typeof(float))
+                    f.SetValue(c, amount);
+
+                var p = t.GetProperty(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (p != null && p.CanWrite && p.PropertyType == typeof(float))
+                    p.SetValue(c, amount);
+            }
+            catch { }
         }
 
         if (amount <= 0.02f) Hide(c);
@@ -110,10 +142,12 @@ internal static class StainSync
         foreach (var m in GameProbe.StrokeMethods)
         {
             if (m.DeclaringType == null || !m.DeclaringType.IsAssignableFrom(c.GetType())) continue;
+
             try
             {
                 var ps = m.GetParameters();
                 var args = new object[ps.Length];
+
                 for (var i = 0; i < ps.Length; i++)
                 {
                     var pt = ps[i].ParameterType;
@@ -123,6 +157,7 @@ internal static class StainSync
                     else if (pt == typeof(float)) args[i] = strength;
                     else args[i] = pt.IsValueType ? Activator.CreateInstance(pt)! : null!;
                 }
+
                 m.Invoke(c, args);
                 return;
             }
