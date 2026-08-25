@@ -16,7 +16,7 @@ public sealed class CoopConfig
     public bool InjectMainMenuButton { get; set; } = true;
     public bool ShowMenuHint { get; set; } = true;
 
-    /// <summary>Optional exact type names from probe.json if auto-detect misses.</summary>
+    // optional exact type names from probe.json if auto detect misses
     public List<string> ExtraStainTypeNames { get; set; } = new();
     public List<string> ExtraCleanMethodNames { get; set; } = new();
     public string PlayerTypeName { get; set; } = "";
