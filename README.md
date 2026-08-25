@@ -21,7 +21,6 @@ An unofficial cooperative multiplayer mod for **Crime Scene Cleaner**. Clean up 
 
 ## Installation & Setup
 
-1. Grab the latest release build or compile the project from source.
-2. Place the `CrimeSceneCoop.dll` into your game's mod directory:[cite: 1]
-   ```text
-   <path-to-crime-scene-cleaner>/Mods/CrimeSceneCoop.dll
+### 1. Install MelonLoader
+1. Download and install [MelonLoader](https://melonloader.co/) for **Crime Scene Cleaner**.
+2. Run the game once with MelonLoader installed to generate the required folders (including the `Mods` folder).
