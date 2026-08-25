@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <GameDir>/home/PC/.local/share/Steam/steamapps/common/Crime Scene Cleaner</GameDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- IL2CPP assemblies -->
+    <UnityAsmDir Condition="Exists('$(GameDir)/MelonLoader/Il2CppAssemblies/UnityEngine.CoreModule.dll')">$(GameDir)/MelonLoader/Il2CppAssemblies</UnityAsmDir>
+    <!-- Mono assemblies fallback -->
+    <UnityAsmDir Condition="'$(UnityAsmDir)' == '' and Exists('$(GameDir)/MelonLoader/net35/UnityEngine.CoreModule.dll')">$(GameDir)/MelonLoader/net35</UnityAsmDir>
+    <UnityAsmDir Condition="'$(UnityAsmDir)' == '' and Exists('$(GameDir)/MelonLoader/Managed/UnityEngine.CoreModule.dll')">$(GameDir)/MelonLoader/Managed</UnityAsmDir>
+    <UnityAsmDir Condition="'$(UnityAsmDir)' == ''">$(GameDir)/MelonLoader/Il2CppAssemblies</UnityAsmDir>
+  </PropertyGroup>
+</Project>

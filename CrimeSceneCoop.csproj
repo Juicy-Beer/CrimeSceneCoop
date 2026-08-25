@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>CrimeSceneCoop</AssemblyName>
+    <RootNamespace>CrimeSceneCoop</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
+    <DebugType>embedded</DebugType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>$(GameDir)\MelonLoader\net6\MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(GameDir)\MelonLoader\net6\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>$(GameDir)\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Common">
+      <HintPath>$(GameDir)\MelonLoader\net6\Il2CppInterop.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Unity + game assemblies generated on first MelonLoader launch -->
+  <ItemGroup>
+    <Reference Include="UnityEngine.CoreModule" Condition="Exists('$(UnityAsmDir)\UnityEngine.CoreModule.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule" Condition="Exists('$(UnityAsmDir)\UnityEngine.IMGUIModule.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule" Condition="Exists('$(UnityAsmDir)\UnityEngine.InputLegacyModule.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule" Condition="Exists('$(UnityAsmDir)\UnityEngine.PhysicsModule.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule" Condition="Exists('$(UnityAsmDir)\UnityEngine.AnimationModule.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule" Condition="Exists('$(UnityAsmDir)\UnityEngine.UIModule.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI" Condition="Exists('$(UnityAsmDir)\UnityEngine.UI.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule" Condition="Exists('$(UnityAsmDir)\UnityEngine.TextRenderingModule.dll')">
+      <HintPath>$(UnityAsmDir)\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib" Condition="Exists('$(UnityAsmDir)\Il2Cppmscorlib.dll')">
+      <HintPath>$(UnityAsmDir)\Il2Cppmscorlib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="WarnMissingGameDir" BeforeTargets="ResolveAssemblyReferences">
+    <Warning
+      Condition="!Exists('$(GameDir)\MelonLoader\net6\MelonLoader.dll')"
+      Text="MelonLoader not found at $(GameDir). Copy Directory.Build.props.user.example to Directory.Build.props.user and set GameDir, then launch the game once with MelonLoader so Il2Cpp assemblies generate." />
+  </Target>
+</Project>

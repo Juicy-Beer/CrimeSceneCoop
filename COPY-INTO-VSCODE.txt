@@ -1,0 +1,14 @@
+Open this whole CrimeSceneCoop folder in VSCode.
+
+  File → Open Folder → CrimeSceneCoop
+
+Then:
+
+  1. Copy Directory.Build.props.user.example → Directory.Build.props.user
+  2. Set GameDir to your Crime Scene Cleaner install
+  3. Ctrl+Shift+B  (dotnet build -c Release)
+  4. Copy bin/Release/CrimeSceneCoop.dll
+     into  <game>/Mods/CrimeSceneCoop.dll
+
+Both players need that same DLL.
+F10 in-game = Multiplayer (Host / Join).
