@@ -15,8 +15,8 @@ An unofficial coop multiplayer mod for **[Crime Scene Cleaner](https://store.ste
 ## Features
 
 * **Multiplayer Sync:** Synchronise player movements, actions, and cleaned stains across clients.
-* **Host & Join:** Host a session or connect using multiplayer right from the game.
-* **Lightweight Integration:** Built cleanly using Harmony patches to hook into the game logic without heavy overhead.
+* **Host & Join:** Create a lobby or connect using multiplayer right from the game start menu.
+* **Lightweight Integration:** Use of Harmony patches to hook into the game logic without heavy overhead.
 
 ---
 
