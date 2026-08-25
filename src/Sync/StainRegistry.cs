@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace CrimeSceneCoop;
 
@@ -23,26 +23,45 @@ internal static class StainRegistry
         {
             if (tr == null) continue;
             if (!tr.gameObject.scene.IsValid() || tr.gameObject.scene.name != scene) continue;
+
             Component? stain = null;
+
+            // Prefer real CleanableDecal component
             foreach (var c in tr.GetComponents<Component>())
             {
-                if (c != null && GameProbe.IsStainComponent(c))
+                if (c == null) continue;
+                var name = c.GetType().Name;
+                if (name == "CleanableDecal" || name == "TaintMaterialCleaner" || name == "CleanableTarget")
                 {
                     stain = c;
                     break;
                 }
             }
+
             if (stain == null)
             {
-                var n = tr.name;
-                if (!LooksLikeStainName(n)) continue;
+                foreach (var c in tr.GetComponents<Component>())
+                {
+                    if (c != null && GameProbe.IsStainComponent(c))
+                    {
+                        stain = c;
+                        break;
+                    }
+                }
+            }
+
+            if (stain == null)
+            {
+                if (!LooksLikeStainName(tr.name)) continue;
                 stain = tr;
             }
+
             var id = StableId(scene, tr);
             _byId[id] = stain;
             _instToId[stain.GetInstanceID()] = id;
-            _amount[id] = 1f;
+            _amount[id] = ReadCurrentAmount(stain);
         }
+
         CoopLog.Info($"Indexed {_byId.Count} stains in '{scene}'.");
     }
 
@@ -94,6 +113,32 @@ internal static class StainRegistry
         }
     }
 
+    private static float ReadCurrentAmount(Component c)
+    {
+        if (c == null) return 1f;
+        try
+        {
+            var t = c.GetType();
+            foreach (var n in new[] { "Intensity", "intensity", "amount", "Amount", "coveragePercentage" })
+            {
+                var p = t.GetProperty(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (p != null && p.CanRead && p.PropertyType == typeof(float))
+                {
+                    var val = p.GetValue(c);
+                    if (val != null) return Convert.ToSingle(val);
+                }
+                var f = t.GetField(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (f != null && f.FieldType == typeof(float))
+                {
+                    var val = f.GetValue(c);
+                    if (val != null) return Convert.ToSingle(val);
+                }
+            }
+        }
+        catch { }
+        return 1f;
+    }
+
     private static string PathOf(Transform tr)
     {
         var s = tr.name;
@@ -111,7 +156,7 @@ internal static class StainRegistry
     {
         n = n.ToLowerInvariant();
         return n.Contains("stain") || n.Contains("blood") || n.Contains("dirt") ||
-               n.Contains("decal") || n.Contains("splatter") || n.Contains("gore") ||
-               n.Contains("mess") || n.Contains("filth") || n.Contains("puddle");
+        n.Contains("decal") || n.Contains("splatter") || n.Contains("gore") ||
+        n.Contains("mess") || n.Contains("filth") || n.Contains("puddle");
     }
 }
