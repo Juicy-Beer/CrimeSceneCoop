@@ -22,5 +22,5 @@ An unofficial cooperative multiplayer mod for **Crime Scene Cleaner**. Clean up 
 ## Installation & Setup
 
 ### 1. Install MelonLoader
-1. Download and install [MelonLoader]([https://melonloader.co/](https://github.com/lavagang/melonloader)) for **Crime Scene Cleaner**.
+1. Download and install [MelonLoader]([https://melonloader.co/](https://github.com/lavagang/melonloader]) for **Crime Scene Cleaner**.
 2. Run the game once with MelonLoader installed to generate the required folders (including the `Mods` folder).
