@@ -3,16 +3,14 @@ using UnityEngine;
 
 namespace CrimeSceneCoop;
 
-/// <summary>
-/// Local mop is instant (the game already cleaned it). The packet goes out
-/// immediately; the friend applies the same clean on their client.
-/// A 2 Hz snapshot heals any missed event so both floors stay identical.
-/// </summary>
+// local mop is instant (the game already cleaned it) the packet goes out
+// instantly the friend applies the same clean on their client
+// 2 hz snapshot heals any missed event so both floors stay same
 internal static class StainSync
 {
     public static void Tick(float dt)
     {
-        // snapshot send lives in CoopSession; nothing per-frame here
+        // snapshot send lives in CoopSession nothing per frame here
     }
 
     public static void ApplyRemoteClean(uint id, float amount)
@@ -66,7 +64,7 @@ internal static class StainSync
             seen.Add(id);
             if (amount <= 0.02f) ApplyRemoteClean(id, 0f);
         }
-        // Anything we still have that the host no longer lists is gone
+        // anything it still has that the host no longer lists is gone
         foreach (var (id, amount) in StainRegistry.Snapshot())
         {
             if (!seen.Contains(id) && amount > 0)
