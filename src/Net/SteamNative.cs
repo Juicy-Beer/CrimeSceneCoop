@@ -2,10 +2,8 @@ using System.Runtime.InteropServices;
 
 namespace CrimeSceneCoop;
 
-/// <summary>
-/// Attaches to the game's already-loaded steam_api64.dll. Does not shut Steam down.
-/// Uses ManualDispatch so we don't fight the game's callback pump.
-/// </summary>
+// attaches to the games already loaded steam_api64.dll does not shut Steam down
+// ManualDispatch so it doesnt fight the games callback pump
 internal static class SteamNative
 {
     public static bool Available { get; private set; }
