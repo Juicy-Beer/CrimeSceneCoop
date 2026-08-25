@@ -4,10 +4,7 @@ using UnityEngine;
 
 namespace CrimeSceneCoop;
 
-/// <summary>
-/// Visible stand-in for the other player. Prefers a stripped clone of the local
-/// body; falls back to a capsule so you always see your friend.
-/// </summary>
+// visible for the other player prefers a stripped clone local
 internal sealed class RemoteAvatar : MonoBehaviour
 {
     private Vector3 _target;
