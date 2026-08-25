@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white" alt="Gemini">
 </p>
 
-An unofficial coop multiplayer mod for **[Crime Scene Cleaner](https://store.steampowered.com/app/1040200/Crime_Scene_Cleaner/)**, (Coded with some [Gemini](https://gemini.google.com/)).
+An unofficial coop multiplayer mod for **[Crime Scene Cleaner](https://store.steampowered.com/app/1040200/Crime_Scene_Cleaner/)**, (Coded with some **[Gemini](https://gemini.google.com/))**.
 
 ---
 
