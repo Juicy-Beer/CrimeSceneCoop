@@ -5,10 +5,8 @@ using UnityEngine;
 
 namespace CrimeSceneCoop;
 
-/// <summary>
-/// Walks game assemblies once and records stain / player / clean types.
-/// Writes UserData/TwoClean/probe.json so we can tighten hooks without guessing.
-/// </summary>
+/// walks game assemblies once and records stain / player / clean types
+/// writes UserData/TwoClean/probe.json so it tightens hooks with no guessing
 internal static class GameProbe
 {
     public static List<Type> StainTypes { get; } = new();
@@ -89,7 +87,7 @@ internal static class GameProbe
             }
         }
 
-        // Also scan every MonoBehaviour for Clean* methods even if the type name is opaque
+        // also scan every MonoBehaviour for Clean* methods even if the type name is opaque
         if (CleanMethods.Count == 0)
         {
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
