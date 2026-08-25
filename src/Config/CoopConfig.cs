@@ -16,9 +16,24 @@ public sealed class CoopConfig
     public bool InjectMainMenuButton { get; set; } = true;
     public bool ShowMenuHint { get; set; } = true;
 
-    // optional exact type names from probe.json if auto detect misses
-    public List<string> ExtraStainTypeNames { get; set; } = new();
-    public List<string> ExtraCleanMethodNames { get; set; } = new();
+    // Real class names from the dump
+    public List<string> ExtraStainTypeNames { get; set; } = new()
+    {
+        "CleanableDecal",
+        "TaintMaterialCleaner",
+        "CleanableTarget",
+        "CleanableObject"
+    };
+
+    // Real method names from the dump
+    public List<string> ExtraCleanMethodNames { get; set; } = new()
+    {
+        "CleanDecal",
+        "PaintTexture",
+        "SetStrength",
+        "PaintTextureImmediate"
+    };
+
     public string PlayerTypeName { get; set; } = "";
 
     public static string Dir => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UserData", "TwoClean");
