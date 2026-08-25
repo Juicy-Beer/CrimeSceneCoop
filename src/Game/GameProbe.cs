@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace CrimeSceneCoop;
 
-/// walks game assemblies once and records stain / player / clean types
-/// writes UserData/TwoClean/probe.json so it tightens hooks with no guessing
 internal static class GameProbe
 {
     public static List<Type> StainTypes { get; } = new();
@@ -17,16 +15,18 @@ internal static class GameProbe
 
     private static readonly string[] StainHints =
     {
+        "CleanableDecal", "TaintMaterialCleaner", "CleanableTarget", "CleanableObject",
         "Stain", "Blood", "Dirt", "Mess", "Decal", "Cleanable", "Filth", "Gore",
         "Splatter", "Spot", "Puddle", "Residue", "Contamination", "Grime", "Smear",
-        "Blob", "Goo", "Viscera", "CrimeDirt", "Washable", "Moppable"
+        "Blob", "Goo", "Viscera", "CrimeDirt", "Washable", "Moppable", "Taint"
     };
 
     private static readonly string[] CleanHints =
     {
+        "CleanDecal", "PaintTexture", "SetStrength", "PaintTextureImmediate",
         "Clean", "Mop", "Wash", "RemoveStain", "Erase", "ClearDirt", "OnClean",
         "ApplyClean", "CleanStain", "Subtract", "AddClean", "DoClean", "FinishClean",
-        "RemoveDirt", "ClearStain", "Wipe", "Scrub", "PowerWash", "Spray"
+        "RemoveDirt", "ClearStain", "Wipe", "Scrub", "PowerWash", "Spray", "OnHit"
     };
 
     private static readonly string[] PlayerHints =
@@ -49,6 +49,7 @@ internal static class GameProbe
         {
             var name = asm.GetName().Name ?? "";
             if (!name.Contains("Assembly-CSharp", StringComparison.OrdinalIgnoreCase) &&
+                !name.Contains("MainGame", StringComparison.OrdinalIgnoreCase) &&
                 !name.Contains("CSharp", StringComparison.OrdinalIgnoreCase) &&
                 !name.StartsWith("Il2Cpp", StringComparison.Ordinal))
                 continue;
@@ -66,7 +67,16 @@ internal static class GameProbe
                 if (t == null || t.IsAbstract) continue;
                 var tn = t.Name;
 
-                if (Matches(tn, StainHints) || extraStain.Contains(t.FullName) || extraStain.Contains(tn))
+                bool isKnownStain =
+                tn == "CleanableDecal" ||
+                tn == "TaintMaterialCleaner" ||
+                tn == "CleanableTarget" ||
+                tn == "CleanableObject" ||
+                Matches(tn, StainHints) ||
+                extraStain.Contains(t.FullName) ||
+                extraStain.Contains(tn);
+
+                if (isKnownStain)
                 {
                     StainTypes.Add(t);
                     report.Add("stain  " + t.FullName);
@@ -87,7 +97,7 @@ internal static class GameProbe
             }
         }
 
-        // also scan every MonoBehaviour for Clean* methods even if the type name is opaque
+        // Fallback if no clean methods found
         if (CleanMethods.Count == 0)
         {
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
@@ -109,7 +119,7 @@ internal static class GameProbe
             Directory.CreateDirectory(CoopConfig.Dir);
             File.WriteAllText(
                 Path.Combine(CoopConfig.Dir, "probe.json"),
-                JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
+                              JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch { }
 
@@ -122,7 +132,7 @@ internal static class GameProbe
         var t = c.GetType();
         foreach (var s in StainTypes)
             if (s.IsAssignableFrom(t)) return true;
-        var n = t.Name;
+            var n = t.Name;
         return Matches(n, StainHints);
     }
 
@@ -165,6 +175,6 @@ internal static class GameProbe
     {
         foreach (var h in hints)
             if (name.IndexOf(h, StringComparison.OrdinalIgnoreCase) >= 0) return true;
-        return false;
+            return false;
     }
 }
