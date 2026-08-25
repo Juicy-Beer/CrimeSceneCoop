@@ -15,7 +15,7 @@ internal static class HarmonyHooks
         foreach (var m in GameProbe.CleanMethods.Concat(GameProbe.StrokeMethods).Distinct())
         {
             if (m == null) continue;
-            // Ignore getter methods like 'GetCleaned' to prevent frame-rate trampoline crashes
+            // ignore getters like 'GetCleaned' to prevent fps trampoline crashes
             if (m.Name.StartsWith("Get", StringComparison.OrdinalIgnoreCase) || m.ReturnType != typeof(void))
                 continue;
 
@@ -32,7 +32,7 @@ internal static class HarmonyHooks
 
         foreach (var t in GameProbe.StainTypes)
         {
-            // Filter out non-MonoBehaviour types to prevent AccessTools warning spam
+            // filter out non MonoBehaviour types to prevent AccessTools warning spam
             if (t == null || !typeof(Component).IsAssignableFrom(t)) continue;
             TryPatch(harmony, t, "OnDestroy", nameof(GonePostfix));
             TryPatch(harmony, t, "OnDisable", nameof(GonePostfix));
@@ -46,7 +46,7 @@ internal static class HarmonyHooks
     {
         try
         {
-            // Only search methods declared directly on the target class to prevent console noise
+            // only search methods declared directly on the target class to prevent console noise
             var m = t.GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             if (m == null) return;
             harmony.Patch(m, postfix: new HarmonyMethod(typeof(HarmonyHooks), postfix));
@@ -77,7 +77,7 @@ internal static class HarmonyHooks
         }
         catch
         {
-            // Suppress exception loops to protect frame rate
+            // suppress exception loops to protect fps
         }
     }
 
