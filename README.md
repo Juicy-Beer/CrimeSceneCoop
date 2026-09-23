@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=csharp&logoColor=white" alt="C#">
   <img src="https://img.shields.io/badge/Harmony-000000?style=for-the-badge&logo=dotnet&logoColor=white" alt="Harmony">
   <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white" alt="Steam">
-  <img src="https://img.shields.io/badge/Status-Work%20in%20Progress-orange?style=for-the-badge" alt="Status">
+  <img src="https://img.shields.io/badge/Status-ABANDONED-red?style=for-the-badge" alt="Status">
   <img src="https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white" alt="Gemini">
 </p>
 
